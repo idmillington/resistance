@@ -35,7 +35,7 @@ class Variable(object):
             if value == 1.0:
                 return u"100.0 \u00b10.00%"
             else:
-                error = math.sqrt(value * (1.0 - value)) / float(self.samples)
+                error = math.sqrt(value * (1.0 - value) / float(self.samples))
                 return u"{:5.2f} \u00b1{:4.2f}% n={:3d}".format(
                     value*100, error*100, int(self.samples)
                     )
