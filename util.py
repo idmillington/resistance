@@ -1,6 +1,8 @@
+import math
+
 class Variable(object):
     def __init__(self, total = 0.0, samples = 0):
-        self.total = total 
+        self.total = total
         self.samples = samples
         self.minimum = 'None'
         self.maximum = None
@@ -17,12 +19,25 @@ class Variable(object):
         else:
             return None
 
-    def __repr__(self):
+    def __unicode__(self):
         if self.samples:
-            value = 100.0 * float(self.total) / float(self.samples)
-            if value == 100.0:
-                return "100.0%"
-            return "{:5.2f}%".format(value)
+            value = float(self.total) / float(self.samples)
+            if value == 1.0:
+                return u"100.0%"
+            else:
+                return u"{:5.2f}%".format(value*100)
         else:
-            return "   N/A"
+            return u"   N/A"
 
+    def detailed_unicode(self):
+        if self.samples:
+            value = float(self.total) / float(self.samples)
+            if value == 1.0:
+                return u"100.0 \u00b10.00%"
+            else:
+                error = math.sqrt(value * (1.0 - value)) / float(self.samples)
+                return u"{:5.2f} \u00b1{:4.2f}% n={:3d}".format(
+                    value*100, error*100, int(self.samples)
+                    )
+        else:
+            return u"         N/A"

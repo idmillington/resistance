@@ -39,7 +39,7 @@ class CompetitionRound(Game):
         statistics.setdefault(player.name, CompetitionStatistics())
         s = statistics[player.name]
         # When there are no spies, we expect support.
-        if not spies:    
+        if not spies:
             s.votesRes.sample(int(vote))
         # For missions with spies, we expect down vote.
         else:
@@ -50,7 +50,7 @@ class CompetitionRound(Game):
             statistics.setdefault(spy.name, CompetitionStatistics())
             s = statistics[spy.name]
             s.spyVoted.sample(int(vote))
-   
+
     def onPlayerSelected(self, player, team):
         global statistics
         if player.spy:
@@ -72,14 +72,14 @@ class CompetitionRunner(object):
     def __init__(self, competitors, rounds = 10000):
         self.competitors = competitors
         self.rounds = rounds
-        self.games = [] 
+        self.games = []
 
     def pickPlayersForRound(self):
         # Only one instance of each bot per game, assumes more than five.
         # return random.sample(self.competitors, 5)
-        
+
         # Multiple possible bot instances per game, works for any number.
-        return [random.choice(self.competitors) for x in range(0,5)] 
+        return [random.choice(self.competitors) for x in range(0,5)]
 
     def main(self):
         names = [bot.__name__ for bot in self.competitors]
@@ -110,7 +110,7 @@ class CompetitionRunner(object):
         return g
 
     def echo(self, *args):
-        print ' '.join([str(a) for a in args])
+        print ' '.join([unicode(a) for a in args])
 
     def show(self):
         global statistics
@@ -123,17 +123,31 @@ class CompetitionRunner(object):
         if len(statistics) == 0:
             return
 
-        self.echo("SPIES\t\t\t\t(voted,\t\tselected)")
-        for s in sorted(statistics.items(), key = lambda x: x[1].spyWins.estimate(), reverse = True):
-            self.echo(" ", '{0:<16s}'.format(s[0]), s[1].spyWins, "\t", s[1].spyVoted, "\t", s[1].spySelected)
+        self.echo("SPIES\t\t\t\t\t(voted,\t\tselected)")
+        for s in sorted(statistics.items(),
+                        key=lambda x: x[1].spyWins.estimate(),
+                        reverse=True):
+            self.echo(" ", '{0:<16s}'.format(s[0]),
+                      s[1].spyWins.detailed_unicode(),
+                      "\t", s[1].spyVoted,
+                      "\t", s[1].spySelected)
 
-        self.echo("RESISTANCE\t\t\t(vote,\t\tselect)")
-        for s in sorted(statistics.items(), key = lambda x: x[1].resWins.estimate(), reverse = True):
-            self.echo(" ", '{0:<16s}'.format(s[0]), s[1].resWins, "\t", s[1].votesRes, s[1].votesSpy, "\t", s[1].selections)
+        self.echo("RESISTANCE\t\t\t\t(vote,\t\t\t select)")
+        for s in sorted(statistics.items(),
+                        key=lambda x: x[1].resWins.estimate(),
+                        reverse=True):
+            self.echo(" ", '{0:<16s}'.format(s[0]),
+                      s[1].resWins.detailed_unicode(),
+                      "\t", s[1].votesRes,
+                      " ", s[1].votesSpy,
+                      "\t", s[1].selections)
 
         self.echo("TOTAL")
-        for s in sorted(statistics.items(), key = lambda x: x[1].total().estimate(), reverse = True):
-            self.echo(" ", '{0:<16s}'.format(s[0]), s[1].total())
+        for s in sorted(statistics.items(),
+                        key=lambda x: x[1].total().estimate(),
+                        reverse=True):
+            self.echo(" ", '{0:<16s}'.format(s[0]),
+                      s[1].total().detailed_unicode())
         self.echo("")
 
         statistics = {}
