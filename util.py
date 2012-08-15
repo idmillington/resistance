@@ -31,13 +31,19 @@ class Variable(object):
 
     def detailed_unicode(self):
         if self.samples:
-            value = float(self.total) / float(self.samples)
-            if value == 1.0:
-                return u"100.0 \u00b10.00%"
-            else:
-                error = math.sqrt(value * (1.0 - value) / float(self.samples))
-                return u"{:5.2f} \u00b1{:4.2f}% n={:3d}".format(
-                    value*100, error*100, int(self.samples)
-                    )
+            # We're dealing with potential results at 0% or 100%, so
+            # use an Agresti-Coull interval (can't do a normal
+            # Clopper-Pearson without requiring the numpy library, and
+            # can't use the central limit theorem too close to the
+            # extremes). Note this is still degenerate when the number
+            # of samples is very small, and may give an upper bound >
+            # 100%.
+            n_prime = self.samples + 3.84 # 95% confidence interval
+            value = (self.total + (3.84 * 0.5)) / n_prime
+            error = 1.96 * math.sqrt(value * (1.0 - value) / n_prime)
+
+            return u"{:5.2f} \u00b1{:4.2f}% n={:<4d}".format(
+                value*100, error*100, int(self.samples)
+                )
         else:
             return u"         N/A"
