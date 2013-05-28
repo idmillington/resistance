@@ -42,8 +42,8 @@ class Variable(object):
             value = (self.total + (3.84 * 0.5)) / n_prime
             error = 1.96 * math.sqrt(value * (1.0 - value) / n_prime)
 
-            return u"{:5.2f} \u00b1{:4.2f}% n={:<4d}".format(
+            return u"{:4.1f} \u00b1 {:3.1f}% n={:<4d}".format(
                 value*100, error*100, int(self.samples)
                 )
         else:
-            return u"         N/A"
+            return u"              N/A"
